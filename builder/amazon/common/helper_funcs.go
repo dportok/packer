@@ -15,10 +15,11 @@ import (
 
 // DestroyAMIs deregisters the AWS machine images in imageids from an active AWS account
 func DestroyAMIs(imageids []*string, ec2conn *ec2.EC2) error {
-	resp, err := ec2conn.DescribeImages(&ec2.DescribeImagesInput{
+	desImReq, resp := ec2conn.DescribeImagesRequest(&ec2.DescribeImagesInput{
 		ImageIds: imageids,
 	})
-
+	desImReq.RetryCount = 11
+	err := desImReq.Send()
 	if err != nil {
 		err := fmt.Errorf("Error describing AMI: %s", err)
 		return err
